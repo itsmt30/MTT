@@ -77,6 +77,55 @@ $error="Something went wrong. Please try again";
     -webkit-box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
     box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
 }
+
+
+
+
+
+
+.package-box {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        max-width: 300px;
+        margin: auto;
+    }
+    .price {
+        font-size: 24px;
+        color: #28a745;
+        font-weight: bold;
+        margin: 15px 0;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        font-family: 'Arial', sans-serif;
+    }
+    .people-input {
+        width: 80px;
+        padding: 8px;
+        font-size: 16px;
+        text-align: center;
+        border: 2px solid #28a745;
+        border-radius: 5px;
+        outline: none;
+    }
+    .details-btn {
+        display: inline-block;
+        background: #28a745;
+        color: white;
+        padding: 10px 15px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: bold;
+        margin-top: 10px;
+        transition: 0.3s;
+    }
+    .details-btn:hover {
+        background: #218838;
+
+
+
+	
 		</style>				
 </head>
 <body>
@@ -131,13 +180,91 @@ foreach($results as $result)
 				<div class="grand"> 
 					<br>
 
-					<h5 style="font-size: 20px; color: #1d8348; font-weight: bold; margin: 15px 0; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2); font-family: 'Arial', sans-serif; letter-spacing: 0.5px;">
-  Rupees <?php echo htmlentities($result->PackagePrice); ?>
-</h5>
+					<?php
+// Fetch base package price from database
+$basePrice = isset($result->PackagePrice) ? (int) htmlentities($result->PackagePrice) : 0;
+$packageId = isset($result->PackageId) ? htmlentities($result->PackageId) : '#';
+?>			
+
+
+<div class="package-box" style="
+    display: flex; 
+    align-items: center; 
+    gap: 20px; 
+    padding: 20px; 
+    background: #f8f9fa; 
+    border-radius: 10px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+    max-width: 600px; 
+    margin: auto;
+">
+
+    <!-- Left Side: Image -->
+    <div class="image-container" style="flex: 1;">
+        <iframe 
+            src="https://drive.google.com/file/d/1X5j8B5LiavYoOELT87KDijjFeVuR3Nlt/preview" 
+            width="100%" 
+            height="380" 
+            allow="autoplay"
+            style="border-radius: 10px; border: none; background: #e0e0e0;"
+        ></iframe>
+    </div>
+
+    <!-- Right Side: Price & Details -->
+    <div class="details-container" style="flex: 1; text-align: left;">
+        <h5 class="price" style="font-size: 20px; color: #1d8348; font-weight: bold;">
+            Rupees <span id="price"><?php echo number_format($basePrice); ?></span>
+        </h5>
+
+        <label for="numPeople" style="display: block; margin-bottom: 5px;">Select Number of People:</label>
+        <input type="number" id="numPeople" class="people-input" name="numPeople" min="1" max="10" value="1" 
+            oninput="updatePrice()" 
+            style="width: 60px; padding: 5px; margin-bottom: 10px;"
+        >
+
+        <br>
+        <a href="package-details.php?pkgid=<?php echo htmlentities($packageId); ?>" 
+           class="details-btn" 
+           style="display: inline-block; padding: 8px 15px; background: #007bff; color: white; text-decoration: none; border-radius: 5px;">
+            View Details
+        </a>
+    </div>
+</div>
+
+<!-- Price Update Script -->
+<script>
+    function updatePrice() {
+        var numPeople = document.getElementById("numPeople").value;
+        var basePrice = <?php echo $basePrice; ?>; 
+        document.getElementById("price").innerText = new Intl.NumberFormat().format(basePrice * numPeople);
+    }
+</script>
+
+
+
+
+		
+<script>
+    function updatePrice() {
+        let numPeople = document.getElementById("numPeople").value;
+        let basePrice = <?php echo $basePrice; ?>;
+        let totalPrice = basePrice * (numPeople > 0 ? numPeople : 1);
+
+        document.getElementById("price").innerText = totalPrice.toLocaleString(); // Format price with commas
+    }
+</script>
+
+
 
 
 				</div>
+
+
+				
 			</div>
+
+
+			
 		<h3>Package Details</h3>
 				<p style="padding-top: 1%"><?php echo htmlentities($result->PackageDetails);?> </p>	
 				<div class="clearfix"></div>
